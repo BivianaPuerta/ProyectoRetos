@@ -1,12 +1,12 @@
-function datosBasicos(){
+function listarDatos(){
     $.ajax({
-        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/client/client",
+        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/message/message",
         type:"GET",
         datatype:'JSON',
         contentType:"application/JSON",
 
         success: function(respuesta){
-            mostrarRespuesta(respuesta.items);
+            colocarRespuesta(respuesta.items);
         },
         error:function (xhr,status){
             console.log(status)
@@ -14,24 +14,20 @@ function datosBasicos(){
     });
 }
 
-function mostrarRespuesta(items){
+function colocarRespuesta(items){
 
     $("#userstable").remove();
-    var myTable= `<table class="table table-bordered" "id="userstable" border="1">
+    var myTable= `<table id="userstable" border="1">
             <tr>
                 <th>ID</th>
-                <th>NAME</th>
-                <th>EMAIL</th>
-                <th>AGE</th>
+                <th>MESSAGE</th>
                 <th colspan="2">ACCIONES</th>
             </tr>`;    
     
     for(i=0;i<items.length;i++){
         myTable+=`<tr>
                     <td>${items[i].id}</td>
-                    <td>${items[i].name}</td>
-                    <td>${items[i].email}</td>
-                    <td>${items[i].age}</td>
+                    <td>${items[i].messagetext}</td>
                     <td><button onclick="eliminarDatos(${items[i].id})">Borrar</td>
                     <td><button onclick="editarInformacion(${items[i].id})">Editar</td>
                  </tr>`;
@@ -43,26 +39,24 @@ function mostrarRespuesta(items){
 function Agregar() {
 
     console.log("Inicia Agregado");
-    let datos2={
+    let datos3={
         id:$("#numid").val(),
-        name:$("#name").val(),
-        email:$("#email").val(),
-        age:$("#age").val(),
+        messagetext:$("#messagetext").val(),
     };
     
-    console.log(datos2);
+    console.log(datos3);
 
     $.ajax({
         type:"POST",
-        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/client/client",
-        data: datos2,
+        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/message/message",
+        data: datos3,
         datatype:'JSON',
         traditional: true,
         
         // contentType:"application.JSON",
 
         success: function(respuesta){
-        datosBasicos(); 
+        listarDatos(); 
         alert("Datos Agregados Correctamente");
         },
         error:function (xhr,status){
@@ -81,7 +75,7 @@ function editarInformacion(numid) {
     $("#numid").prop("disabled", true);
     OcultarBotones(true);
     $.ajax({
-        url: `https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/client/client/${numid}`,
+        url: `https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/message/message/${numid}`,
         type:"GET",
         datatype:'JSON',
         contentType:"application/JSON",
@@ -90,9 +84,7 @@ function editarInformacion(numid) {
             var items=respuesta.items;
             // $("#resultado").empty();
             $("#numid").val(items[0].id),
-            $("#name").val(items[0].name),
-            $("#email").val(items[0].email),
-            $("#age").val(items[0].age)
+            $("#messagetext").val(items[0].name)
         },
         error:function (xhr,status){
             console.log(status)
@@ -101,17 +93,15 @@ function editarInformacion(numid) {
 }
 
 function actualizar(){
-    let datos = {        
+    let datos3 = {        
         id: $("#numid").val(),
-        name: $("#name").val(),
-        email: $("#email").val(),
-        age: $("#age").val()
+        messagetext: $("#messagetext").val()
         }
-        console.log(datos);
-        let datosPeticion=JSON.stringify(datos);
+        console.log(datos3);
+        let datosPeticion=JSON.stringify(datos3);
 
     $.ajax({
-        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/client/client",
+        url:"https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/message/message",
         data: datosPeticion,
         type:'PUT',
         datatype:'JSON',
@@ -120,10 +110,8 @@ function actualizar(){
         success:function (respuesta){
             $("resultado").empty();
             $("#numid").val("");
-            $("#name").val("");
-            $("#email").val("");
-            $("#age");
-            datosBasicos();     
+            $("#messagetext").val("");
+            listarDatos();     
             $("#numid").prop('disabled',false);
             OcultarBotones(false);
             console.log("Actualizado");
@@ -142,13 +130,13 @@ function eliminarDatos(idelement) {
     let datosPeticion=JSON.stringify(datos);
 
     $.ajax({
-        url: `https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/client/client`,
+        url: "https://g466d6ecb122158-pycomputadoras.adb.sa-santiago-1.oraclecloudapps.com/ords/admin/message/message",
         data:datosPeticion,
         type:'DELETE',
         contentType:"application/JSON",
 
         success: function (respuesta) {
-            datosBasicos();
+            listarDatos();
             alert("Elemento Borrado");
         },
         error: function (xhr, status) {
